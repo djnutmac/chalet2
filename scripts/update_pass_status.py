@@ -105,12 +105,34 @@ def parse_time(value):
 
 def main():
     request = Request(ENDPOINT, headers={
-        "Accept": "application/json",
-        "Accept-Language": "it-CH,it;q=0.9,de;q=0.8,en;q=0.7",
-        "User-Agent": "PoschiavoPassStatus/1.0 (hourly public road-status display)",
+        # Il portale serve i dati della mappa con una richiesta simile a quella del browser.
+        # L'identificativo personalizzato usato inizialmente riceveva una risposta HTTP vuota
+        # da GitHub Actions, che causava JSONDecodeError.
+        "Accept": "application/json, text/plain, */*",
+        "Accept-Language": "it-CH,it;q=0.9,de-CH;q=0.8,de;q=0.7,en;q=0.6",
+        "Cache-Control": "no-cache",
+        "Referer": "https://www.strassen.gr.ch/",
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36",
+        "X-Requested-With": "XMLHttpRequest",
     })
     with urlopen(request, timeout=40) as response:
-        payload = json.loads(response.read().decode("utf-8"))
+        raw = response.read()
+        content_type = response.headers.get("Content-Type", "non specificato")
+        status_code = response.status
+    if not raw.strip():
+        raise RuntimeError(
+            f"strassen.gr.ch ha restituito una risposta vuota (HTTP {status_code}, "
+            f"Content-Type: {content_type}). Il server potrebbe rifiutare la richiesta "
+            "da GitHub Actions; il file data/passi.json non è stato modificato."
+        )
+    try:
+        payload = json.loads(raw.decode("utf-8-sig"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        preview = raw[:240].decode("utf-8", errors="replace").replace("\n", " ").strip()
+        raise RuntimeError(
+            f"strassen.gr.ch non ha restituito JSON valido (HTTP {status_code}, "
+            f"Content-Type: {content_type}). Inizio risposta: {preview!r}"
+        ) from exc
     if not isinstance(payload, dict) or not isinstance(payload.get("messages"), list):
         raise RuntimeError("La risposta di strassen.gr.ch non contiene la lista 'messages'; non aggiorno il file.")
     passes = []
