@@ -1,0 +1,43 @@
+{
+  "source": "https://www.strassen.gr.ch/",
+  "endpoint": "https://www.strassen.gr.ch/Map/GetRoadStatus",
+  "updatedAt": null,
+  "passes": [
+    {
+      "id": "bernina",
+      "name": "Bernina",
+      "status": "unknown",
+      "detail": "In attesa del primo aggiornamento automatico.",
+      "reportedAt": null,
+      "road": null,
+      "icon": null
+    },
+    {
+      "id": "forcola",
+      "name": "Forcola",
+      "status": "unknown",
+      "detail": "In attesa del primo aggiornamento automatico.",
+      "reportedAt": null,
+      "road": null,
+      "icon": null
+    },
+    {
+      "id": "maloja",
+      "name": "Maloja",
+      "status": "unknown",
+      "detail": "In attesa del primo aggiornamento automatico.",
+      "reportedAt": null,
+      "road": null,
+      "icon": null
+    },
+    {
+      "id": "julier",
+      "name": "Julier",
+      "status": "unknown",
+      "detail": "In attesa del primo aggiornamento automatico.",
+      "reportedAt": null,
+      "road": null,
+      "icon": null
+    }
+  ]
+}
